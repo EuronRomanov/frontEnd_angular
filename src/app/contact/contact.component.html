@@ -35,4 +35,53 @@
       </div>
     </div>
   </div>
+
+  <div fxFlex fxFlexOffSet="20px" class="form-size">
+    <h3>Send us your FeedBack</h3>
+    <p>{{ feedbackForm.value | json }} {{ feedbackForm.status | json }}</p>
+
+    <form novalidate [formGroup]="feedbackForm" #fform="ngForm" (ngSubmit)="onSubmit()">
+      <p>
+        <mat-form-field class="half-width">
+          <input matInput formControlName="firstname" palcehoslder="First Name" type="text" required>
+          <mat-error *ngIf="feedbackForm.get('firstname').hasError('required') && feedbackForm.get('firstname').touched"> First name is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="half-width">
+          <input matInput formControlName="lastname" palcehoslder="Last Name" type="text" required>
+          <mat-error *ngIf="feedbackForm.get('lastname').hasError('required') && feedbackForm.get('lastname').touched"> Last name is required</mat-error>
+        </mat-form-field>
+      </p>
+      <p>
+        <mat-form-field class="half-width">
+          <input matInput formControlName="telnum" palcehoslder="tel. Number" type="tel" required>
+          <mat-error *ngIf="feedbackForm.get('telnum').hasError('required') && feedbackForm.get('telnum').touched"> Tel. num is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="half-width">
+          <input matInput formControlName="email" palcehoslder="Email" type="text" required>
+          <mat-error *ngIf="feedbackForm.get('email').hasError('required') && feedbackForm.get('email').touched"> Email is required</mat-error>
+        </mat-form-field>
+      </p>
+      <table class="form-size">
+        <td>
+          <mat-slide-toggle formControlName="agree">May we contact you?</mat-slide-toggle>
+        </td>
+        <td>
+          <mat-select placeholder="How?" formControlName="contacttype">
+            <mat-option *ngFor="let ctype of contactType" [value]="ctype">
+              {{ctype}}
+            </mat-option>
+          </mat-select>
+        </td>
+      </table>
+        <p>
+          <mat-form-field class="full-with">
+            <textarea matInput formControlName="message" placeholder="Your feedback" rows=12>
+
+            </textarea>
+          </mat-form-field>
+        </p>
+      <button class="submit" mat-button class="background-primary text-floral-white"
+      [disabled]="feedbackForm.invalid">Submit</button>
+    </form>
+  </div>
 </div>
