@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Leader } from "../shared/leader";
 import {  LEADERS} from "../shared/leaders";
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { baseURL } from "../shared/baseurl";
+import { map, catchError } from "rxjs/operators";
+import {  ProcessHTTPMsgService} from "./process-httpmsg.service";
 
 @Injectable({
   providedIn: 'root'
@@ -8,28 +14,26 @@ import {  LEADERS} from "../shared/leaders";
 export class LeaderService {
 
    
-  constructor() { }
+  constructor(private http: HttpClient,
+    private processHTTPMsg: ProcessHTTPMsgService) { }
 
 
-  public getLeaders():Promise<Leader[]>{
-    return new Promise(resolve=>{
-      //simulación de latencia del servidor con   2 segundos de retraso
-      setTimeout(()=>resolve(LEADERS),200);
-    });
+  public getLeaders():Observable<Leader[]>{
+    return this.http.get<Leader[]>(baseURL + 'leadership')
+    .pipe(catchError(this.processHTTPMsg.handError));
+  
   }
 
-  getLeader(id: string): Promise<Leader> {
-    return new Promise(resolve=>{
-      //simulación de latencia del servidor con   2 segundos de retraso
-      setTimeout(()=>resolve(LEADERS.filter((leader) => (leader.id === id))[0]),200);
-    });
+  getLeader(id: string): Observable<Leader> {
+    return this.http.get<Leader>(baseURL + 'leadership/' + id)
+    .pipe(catchError(this.processHTTPMsg.handError));
+   
   }
 
-  getFeaturedLeader(): Promise<Leader> {
-    return new Promise(resolve=>{
-      //simulación de latencia del servidor con   2 segundos de retraso
-      setTimeout(()=>resolve(LEADERS.filter((leader) => leader.featured)[0]),200);
-    });
+  getFeaturedLeader(): Observable<Leader> {
+    return this.http.get<Leader[]>(baseURL + 'leadership?featured=true').pipe(map(leaders => leaders[0]))
+    .pipe(catchError(this.processHTTPMsg.handError));
+   
   }
   
 }

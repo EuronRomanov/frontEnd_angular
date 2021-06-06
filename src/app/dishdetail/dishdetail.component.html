@@ -7,30 +7,39 @@
     fxLayoutGap.xs="0">
     
 
-    <div fxFlex *ngIf="dish">
+    <div fxFlex="40" *ngIf="dish">
     
-      <div fxFlex="100">
-        <mat-card *ngIf="dish">
+      
+        <mat-card >
           <mat-card-header>
             <mat-card-title>
-              <h3 *ngIf="dish">{{dish.name | uppercase}}</h3>
+              <h3 >{{dish.name | uppercase}}</h3>
             </mat-card-title>
           </mat-card-header>
-          <img mat-card-image src={{dish.image}} alt={{dish.name}}>
+          <img mat-card-image src={{BaseURL+dish.image}} alt={{dish.name}}>
           <mat-card-content>
             <p>{{dish.description}}
             </p>
           </mat-card-content>
           <mat-card-actions>
+            <button mat-button [routerlink]="['/dishdetail', prev]">
+              <span class="fas fa-chevron-left fa-lg"></span>
+            </button>
             <button mat-button (click)="goBack()">BACK</button>
             <button mat-button>LIKE</button>
             <button mat-button>SHARE</button>
+            <span class="flex-spacer"></span>
+            <button mat-button [routerlink]="['/dishdetail', next]">
+              <span class="fas fa-chevron-right fa-lg"></span>
+            </button>
           </mat-card-actions>
         </mat-card>
-      </div>
-      <div fxFlex="40">
-        <h1>Comments</h1>
-        <mat-list *ngIf="dish">
+        </div>
+      
+      <div fxFlex="40"  *ngIf="dish" [@visibility]="visibility" [@expand]>
+      
+        <mat-list>
+          <h1>Comments</h1>
           <mat-list-item *ngFor="let comment of dish.comments">
             
             <h3 matLine> {{comment.comment}} </h3>
@@ -42,18 +51,74 @@
               <span class="demo-2"> -- {{comment.author}} </span>
               <span> {{comment.date | date:'mediumDate'}} </span>
             </p>
+
+            
            
           </mat-list-item>
+         
         </mat-list>
+
+       
       </div>
       
+     
+      <div fxFlex="40" *ngIf="dish" [@visibility]="visibility" [@expand]>
+        <h3>Send us your comment</h3>
+        <mat-list *ngIf="!commentForm.invalid" >
+          <mat-list-item> 
+            <h3 matLine> {{commentForm.value['comment'] | json}} </h3>
+            <p matLine>
+              <span > {{commentForm.value['rating'] | json}} Starts </span>
+            </p>
+            <p matLine>
+              
+              <span class="demo-2"> -- {{commentForm.value['author'] | json}} </span>
+             
+            </p>
 
-    </div>
+           </mat-list-item>
+        </mat-list>
+        <form novalidate [formGroup]="commentForm" #commentform="ngForm" (ngSubmit)="onSubmit()">
+          <p>
+            <mat-form-field class="half-width">
+              <input matInput formControlName="author" placeholder="First Name" type="text" required>
+              <mat-error *ngIf="formErrorsComment.author">{{formErrorsComment.author}}</mat-error>
+            </mat-form-field>
+            
+          </p>
+          <p>
 
-    <div fxFlex [hidden]="dish">
+              <mat-slider matInput type="number"  formControlName="rating" thumbLabel tickInterval="1" step="1" min="0" max="5" required></mat-slider>
+              <mat-error *ngIf="formErrorsComment.rating">{{formErrorsComment.rating}}</mat-error>
+
+          </p>
+          
+            <p>
+              <mat-form-field class="half-width">
+                <textarea matInput formControlName="comment" placeholder="Your comment" rows=12 required>
+                </textarea>
+                <mat-error *ngIf="formErrorsComment.comment">{{formErrorsComment.comment}}</mat-error>
+              </mat-form-field>
+            </p>
+          <button class="submit" mat-button class="background-primary text-floral-white"
+          [disabled]="commentForm.invalid" >Submit</button>
+        </form>
+      </div>
+     
+   
+
+    <div fxFlex [hidden]="dish || errMess">
       <mat-spinner></mat-spinner><h4>Loading ... Please Wait!</h4>
+      
     </div>
  
 
+    <div fxFlex *ngIf="errMess">
+      <h2>Error</h2>
+      <h4>{{errMess}}</h4>
+    </div>
+
+
+    
  
 </div>
